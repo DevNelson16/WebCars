@@ -9,8 +9,8 @@ interface AuthProviderProps {
 
 interface UserProps{
     uid: string;
-    name: string | null;
-    email: string | null 
+    name: string | null
+    email: string | null
 }
 function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<UserProps | null>(null)
@@ -39,11 +39,21 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
     }, [])
 
+    function handleInfoUser({name, email, uid}: UserProps){
+        setUser({
+            name,
+            email,
+            uid
+        })
+    }
+
     return (
         <AuthContext.Provider
             value={{
                 signed: !!user,
                 loadingAuth,
+                handleInfoUser,
+                user
             }}>
             {children}
         </AuthContext.Provider>

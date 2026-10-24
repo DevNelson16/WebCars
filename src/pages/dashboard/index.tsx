@@ -1,9 +1,10 @@
+import { Container } from "../../components/container";
+import { DashboardHeader } from "../../components/panelheader";
+
 export function Dashboard() {
   return (
-    <>
-      <h1>
-        Page Dashboard
-      </h1>
-    </>
+    <Container>
+      <DashboardHeader />
+    </Container>
   )
 }

@@ -102,7 +102,7 @@ export function New() {
 
       console.log("Imagem enviada com sucesso:", result.publicUrl);
       setImages((prev) => [...prev, result.publicUrl])
-      alert("Imagem enviada com sucesso!");
+      //alert("Imagem enviada com sucesso!");
     } catch (error) {
       console.error("Erro ao enviar imagem:", error);
       alert("Ocorreu um erro ao enviar a imagem.");

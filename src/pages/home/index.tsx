@@ -17,9 +17,12 @@ export function Home() {
     price: string;
     city: string;
     images: string[];
+    onLoad?: () => void;
+    style?: React.CSSProperties;
   }
 
   const [cars, setCars] = useState<CarProps[]>([]);
+  const [loadimages, setLoadImages] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadCars() {
@@ -49,8 +52,13 @@ export function Home() {
     }
 
     loadCars();
-    
+
   }, []);
+
+  function handleImageLoad(id: string) {
+    setLoadImages((prevImageLoaded) => [...prevImageLoaded, id])
+  }
+
 
   return (
     <Container>
@@ -65,7 +73,7 @@ export function Home() {
           Buscar
         </button>
       </section>
-      
+
       <h1
         className="font-bold text-center mt-6 text-2xl mb-4"
       >
@@ -76,13 +84,18 @@ export function Home() {
 
 
         {cars.map((car) => (
-          <Link key={car.id} to ={`/car/${car.id}`}>
-            <section  className="w-full bg-white rounded-lg overflow-hidden">
+          <Link key={car.id} to={`/car/${car.id}`}>
+            <section className="w-full bg-white rounded-lg overflow-hidden">
+              <div
+                className="w-full h-72 rounded-lg bg-slate-200"
+                style={{ display: loadimages.includes(car.id) ? "none" : "block" }}
+              ></div>
               {car.images && car.images.length > 0 ? (
                 <CarsImg
                   images={car.images ?? []}
                   name={car.name}
-                  onLoad={ () => handleImageLoadcar.id) }
+                  onLoad={() => handleImageLoad(car.id)}
+                  style={{ display: loadimages.includes(car.id) ? "block" : "none" }}
                 />
               ) : (
                 <div className="w-full h-56 bg-gray-200 flex items-center justify-center">

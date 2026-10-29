@@ -1,6 +1,57 @@
 import { Container } from "../../components/container";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../services/firebaseConnection";
+import { CarsImg } from "../../components/carsImg";
 
 export function Home() {
+  interface CarProps {
+    id: string;
+    name: string;
+    model: string;
+    description: string;
+    year: string;
+    uid: string;
+    km: string;
+    price: string;
+    city: string;
+    images: string[];
+  }
+
+  const [cars, setCars] = useState<CarProps[]>([]);
+
+  useEffect(() => {
+    async function loadCars() {
+      try {
+        const carsRef = collection(db, "cars");
+        const snapshot = await getDocs(carsRef);
+
+        const carsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as CarProps[];
+
+        setCars(carsList);
+
+        console.table(
+          carsList.map((car) => ({
+            id: car.id,
+            nome: car.name,
+            modelo: car.model,
+            description: car.description,
+            quantidadeImagens: car.images?.length ?? 0,
+          }))
+        );
+      } catch (error) {
+        console.error("Erro ao carregar os carros:", error);
+      }
+    }
+
+    loadCars();
+    
+  }, []);
+
   return (
     <Container>
       <section className="bg-white p-4 rounded-lg w-full max-w-3xl mx-auto flex justify-center items-center gap-2">
@@ -14,7 +65,7 @@ export function Home() {
           Buscar
         </button>
       </section>
-
+      
       <h1
         className="font-bold text-center mt-6 text-2xl mb-4"
       >
@@ -24,32 +75,48 @@ export function Home() {
       <main className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 
 
-        <section className="w-full bg-white rounded-lg">
-          <img
-            className="w-full rounded-lg mb-2 max-h-72 hover:scale-105 transition-all"
-            src="https://ireland.apollo.olxcdn.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmbiI6Ijk1OWxuczB4cjZqMi1TVERWVExQVCIsInciOlt7ImZuIjoiNm1nandscDdrZ2RiMi1TVERWVExQVCIsInMiOiIxNiIsImEiOiIwIiwicCI6IjEwLC0xMCJ9XX0.QnWnH6TZF5u4G9qoZJ-d7V9cDNPtR9dXeI2JNzO3oYY/image;s=1440x0;q=80"
-            alt="carro"
-          />
-          <p className="font-bold mt-1 mb-2 px-2">Mercedes-Benz GLE 350</p>
+        {cars.map((car) => (
+          <Link key={car.id} to ={`/car/${car.id}`}>
+            <section  className="w-full bg-white rounded-lg overflow-hidden">
+              {car.images && car.images.length > 0 ? (
+                <CarsImg
+                  images={car.images ?? []}
+                  name={car.name}
+                  onLoad={ () => handleImageLoadcar.id) }
+                />
+              ) : (
+                <div className="w-full h-56 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">Sem imagem disponível</span>
+                </div>
+              )}
 
-          <div className="flex flex-col px-2">
-              <span className="text-zinc-700 mb-6">2016/2016 | 23.000km </span>
-              <strong className="text-black font-medium text-xl">15.000€</strong>
-          </div>
+              <p className="font-bold mt-1 mb-2 px-2">
+                {car.name} {car.model}
+              </p>
 
-          <div className="w-full h-px bg-slate-200 my-2">
+              {/* 
+              <p className="text-gray-600 text-sm px-2 mb-3">
+                {car.description || "Sem descrição disponível."}
+              </p>*/}
 
-          </div>
+              <div className="flex flex-col px-2">
+                <span className="text-zinc-700 mb-6">
+                  {car.year} | {car.km} km
+                </span>
 
-          <div  className="px-2 pb-2">
-            <span className="text-black">
-              Lisboa - Alverca do Ribatejo
-            </span>
-          </div>
+                <strong className="text-black font-medium text-xl">
+                  {car.price} €
+                </strong>
+              </div>
 
-        </section>
+              <div className="w-full h-px bg-slate-200 my-2" />
 
-        
+              <div className="px-2 pb-2">
+                <span className="text-black">{car.city}</span>
+              </div>
+            </section>
+          </Link>
+        ))}
 
       </main>
     </Container>

@@ -66,7 +66,6 @@ export function New() {
     }
 
     try {
-      // Obter o utilizador autenticado no Firebase
       const currentUser = auth.currentUser;
 
       if (!currentUser) {
@@ -74,14 +73,13 @@ export function New() {
         return;
       }
 
-      // Obter o token de autenticação do Firebase
       const token = await currentUser.getIdToken();
 
-      // Preparar a imagem para o envio
+
       const formData = new FormData();
       formData.append("image", image);
 
-      // Enviar a imagem através da Edge Function
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-car-image`,
         {

@@ -86,16 +86,48 @@ export function Dashboard() {
         return;
       }
 
+
+      const token = await user.getIdToken();
+
+
+      const response = await fetch(
+        "https://mmzlzlzptjkcthobdaya.supabase.co/functions/v1/swift-endpoint",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            images: carToDelete.images ?? [],
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Não foi possível eliminar as fotografias."
+        );
+      }
+
       await deleteDoc(doc(db, "cars", id));
+
 
       setCars((previousCars) =>
         previousCars.filter((car) => car.id !== id)
       );
 
-      alert("Anúncio eliminado com sucesso!");
+      alert("Anúncio e fotografias eliminados com sucesso!");
     } catch (error) {
       console.error("Erro ao eliminar o anúncio:", error);
-      alert("Não foi possível eliminar o anúncio.");
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro ao eliminar o anúncio."
+      );
     }
   }
 

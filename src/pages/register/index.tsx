@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { auth } from '../../services/firebaseConnection'
 import { createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth'
 import { AuthContext } from '../../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 const schema = z.object({
   name: z.string().nonempty("O campo é obrigatório"),
@@ -48,6 +49,7 @@ export function Register() {
           uid: user.user.uid,
         })
         console.log("Cadastrado com sucesso!!!")
+        toast.success("Bem vindo ao Web Carros!")
         navigate("/dashboard", { replace: true })
       })
       .catch((error) => {

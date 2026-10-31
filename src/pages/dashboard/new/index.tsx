@@ -117,6 +117,10 @@ export function New() {
 
     const car = {
       ...data,
+      name: data.name.toUpperCase(),
+      model: data.model.toUpperCase(),
+      city: data.city.toUpperCase(),
+      description: data.description.toUpperCase(),
       userId: user.uid,
       images: images
     }

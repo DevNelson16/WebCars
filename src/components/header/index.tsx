@@ -11,7 +11,7 @@ export function Header() {
   return (
     <div className='w-full flex items-center justify-center h-16 bg-white drop-shadow'>
       <header className='flex w-full mx-w-7xl items-center justify-between px-4 mx-auto'>
-        <Link to="/">
+        <Link to="/" aria-label="Voltar para a página inicial" title="Página inicial">
           <img
             src={logoImg}
             alt="Logo do Site" />
@@ -37,4 +37,3 @@ export function Header() {
     </div>
   )
 }
-

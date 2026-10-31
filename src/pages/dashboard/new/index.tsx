@@ -44,7 +44,7 @@ export function New() {
     mode: "onChange"
   })
 
-  const [carImageSet] = useState<ImagemItemProps[]>([])
+  const [carImageSet, setCarImageSet] = useState<ImagemItemProps[]>([])
 
   async function handleFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
@@ -103,6 +103,15 @@ export function New() {
 
       console.log("Imagem enviada com sucesso:", result.publicUrl);
       setImages((prev) => [...prev, result.publicUrl])
+      setCarImageSet((prev) => [
+        ...prev,
+        {
+          uid: uuidv4(),
+          name: image.name,
+          previewUrl: result.publicUrl,
+          url: result.publicUrl,
+        },
+      ])
       toast.success("Imagem enviada com sucesso!")
       //alert("Imagem enviada com sucesso!");
     } catch (error) {
@@ -113,7 +122,12 @@ export function New() {
 
   async function onSubmit(data: FormData) {
     if (!user?.uid) {
-      toast.error("Envien pelo menos uma imagem!")
+      toast.error("Tens de iniciar sessão para cadastrar o carro.")
+      return;
+    }
+
+    if (images.length === 0) {
+      toast.error("Envie pelo menos uma imagem!")
       return;
     }
 
@@ -129,19 +143,20 @@ export function New() {
 
     try {
       await addDoc(collection(db, "cars"), car)
-      alert("Carro cadastrado com sucesso!")
       toast.success("Carro cadastrado com sucesso!")
       reset()
       setImages([])
+      setCarImageSet([])
     } catch (error) {
       console.error("Erro ao cadastrar carro: ", error)
-      alert("não foi possivle cadastrar o carro!")
+      toast.error("Não foi possível cadastrar o carro!")
     }
   }
 
 
   function handleDeleteImage(index: number) {
     setImages((prev) => prev.filter((_, i) => i !== index));
+    setCarImageSet((prev) => prev.filter((_, i) => i !== index));
   }
 
 
@@ -165,7 +180,7 @@ export function New() {
         {images.length > 0 && (
           <div className="flex flex-wrap gap-3">
             {images.map((image, index) => (
-              <div key={index} className="relative">
+              <div key={carImageSet[index]?.uid ?? index} className="relative">
                 <button
                   type="button"
                   className="absolute right-1 top-1 bg-red-600 rounded p-1"
